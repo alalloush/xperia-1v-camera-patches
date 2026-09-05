@@ -1,3 +1,9 @@
+## [1.0.1-dev.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.0.0...v1.0.1-dev.1) (2026-09-05)
+
+### 🐛 Bug Fixes
+
+* Storage fallback targeted the bundled album StorageUtil instead of the camera one ([4884013](https://github.com/alalloush/xperia-1v-camera-patches/commit/488401339e6234b280c462ba58c5f490d70eba31))
+
 ## 1.0.0 (2026-09-05)
 
 ### 🐛 Bug Fixes
