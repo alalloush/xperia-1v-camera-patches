@@ -29,8 +29,8 @@ private val rewrites = listOf(
 )
 
 /**
- * Both Sony camera apps evaluate storage in a class named StorageUtil (com.sonymobile.photopro.storage /
- * jp.co.sony.mc.camera.storage). Every platform call there is redirected to XperiaStorage.
+ * Both Sony camera apps evaluate storage in their own StorageUtil (jp.co.sony.mc.camera.storage /
+ * com.sonymobile.photopro.storage). Every platform call there is redirected to XperiaStorage.
  */
 @Suppress("unused")
 val storageFallbackPatch = bytecodePatch(
@@ -44,10 +44,15 @@ val storageFallbackPatch = bytecodePatch(
     extendWith("extensions/sony-camera.mpe")
 
     execute {
-        val storageUtil = mutableClassDefBy { classDef -> classDef.type.endsWith("/storage/StorageUtil;") }
+        // Exact classes: both apps also bundle com.sonyericsson.album's unrelated StorageUtil.
+        val storageUtils = listOf(
+            "Ljp/co/sony/mc/camera/storage/StorageUtil;",
+            "Lcom/sonymobile/photopro/storage/StorageUtil;",
+        ).mapNotNull { mutableClassDefByOrNull(it) }
+        if (storageUtils.isEmpty()) throw PatchException("Sony camera StorageUtil class not found")
 
         var rewritten = 0
-        storageUtil.methods.forEach { method ->
+        storageUtils.flatMap { it.methods }.forEach { method ->
             val instructions = method.implementation?.instructions?.toList() ?: return@forEach
             instructions.forEachIndexed { index, instruction ->
                 if (instruction.opcode != Opcode.INVOKE_VIRTUAL && instruction.opcode != Opcode.INVOKE_STATIC) return@forEachIndexed
