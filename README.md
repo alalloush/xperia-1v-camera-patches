@@ -11,8 +11,8 @@ gates on the 1 V HAL (`objectSelectTriggerArea` must be 4 ints; `sceneDetectMode
 `com.sonymobile.cameracommon`. Photo Pro needs no code changes, only the same signer (both apps declare
 `SOMC_CAMERA`).
 
-Also required on LineageOS pdx234, outside of patching: the `Android/data/<pkg>/files/DCIM` probe dir
-(the ROM cannot create it; see the companion repo's KSU module).
+The "Memory unavailable" storage problem (LineageOS pdx234 cannot create `Android/data/<pkg>/files`) is fixed
+in-app by the `Storage fallback` patch, which applies to both the new camera app and Photo Pro.
 
 ### How to use these patches
 
