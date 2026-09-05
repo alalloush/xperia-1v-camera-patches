@@ -1,7 +1,7 @@
 extension {
-    name = "extensions/extension.mpe"
+    name = "extensions/sony-camera.mpe"
 }
 
 android {
-    namespace = "app.template.extension"
+    namespace = "app.xperia.extension"
 }
