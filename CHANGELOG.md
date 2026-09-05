@@ -1,3 +1,9 @@
+## [1.1.0-dev.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.0.1...v1.1.0-dev.1) (2026-09-05)
+
+### ✨ New Features
+
+* Declare app names, tested versions and APKMirror download links ([2aec9f2](https://github.com/alalloush/xperia-1v-camera-patches/commit/2aec9f26ed16b619c1ff5e8d79ffd03a4de8b692))
+
 ## [1.0.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.0.0...v1.0.1) (2026-09-05)
 
 ### 🐛 Bug Fixes

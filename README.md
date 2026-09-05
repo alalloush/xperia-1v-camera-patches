@@ -42,10 +42,15 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.0.1](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.0.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
+> **[v1.1.0-dev.1](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.1.0-dev.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`dev`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
 <details open>
-<summary>📦 jp.co.sony.mc.cameraapp&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
+<summary>📦 Sony Camera&nbsp;&nbsp;•&nbsp;&nbsp;3 patches</summary>
 <br>
+
+**🎯 Supported versions:**
+
+| 1.0.2.A.0.8 | 🧪&nbsp;1.0.2.A.0.6 |
+| :---: | :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
@@ -71,8 +76,13 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 </details>
 
 <details open>
-<summary>📦 com.sonymobile.photopro&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
+<summary>📦 Photography Pro&nbsp;&nbsp;•&nbsp;&nbsp;1 patch</summary>
 <br>
+
+**🎯 Supported versions:**
+
+| 1.7.2.A.0.9 |
+| :---: |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
