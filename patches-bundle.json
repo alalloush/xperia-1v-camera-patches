@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-09-05T11:15:40",
-  "description": "## [1.1.0-dev.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.0.1...v1.1.0-dev.1) (2026-09-05)\n\n### ✨ New Features\n\n* Declare app names, tested versions and APKMirror download links ([2aec9f2](https://github.com/alalloush/xperia-1v-camera-patches/commit/2aec9f26ed16b619c1ff5e8d79ffd03a4de8b692))",
-  "download_url": "https://github.com/alalloush/xperia-1v-camera-patches/releases/download/v1.1.0-dev.1/patches-1.1.0-dev.1.mpp",
+  "created_at": "2026-09-05T11:18:31",
+  "description": "## [1.1.0-dev.2](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2026-09-05)\n\n### 🐛 Bug Fixes\n\n* Storage fallback also rewrote StorageManager.getStorageVolume(Uri), breaking verification ([94c98e0](https://github.com/alalloush/xperia-1v-camera-patches/commit/94c98e0dfd127498287f9f8f2cf55075d922b39b))",
+  "download_url": "https://github.com/alalloush/xperia-1v-camera-patches/releases/download/v1.1.0-dev.2/patches-1.1.0-dev.2.mpp",
   "signature_download_url": "",
-  "version": "1.1.0-dev.1"
+  "version": "1.1.0-dev.2"
 }

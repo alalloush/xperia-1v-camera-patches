@@ -1,3 +1,9 @@
+## [1.1.0-dev.2](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.0-dev.1...v1.1.0-dev.2) (2026-09-05)
+
+### 🐛 Bug Fixes
+
+* Storage fallback also rewrote StorageManager.getStorageVolume(Uri), breaking verification ([94c98e0](https://github.com/alalloush/xperia-1v-camera-patches/commit/94c98e0dfd127498287f9f8f2cf55075d922b39b))
+
 ## [1.1.0-dev.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.0.1...v1.1.0-dev.1) (2026-09-05)
 
 ### ✨ New Features
