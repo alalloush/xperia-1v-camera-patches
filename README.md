@@ -1,16 +1,22 @@
-# 👋🧩 Morphe Patches template
+# 🧩 Xperia 1 V camera patches
 
-Template repository for Morphe Patches.
+Morphe patches that run the **Sony Xperia 1 VI camera app** (`jp.co.sony.mc.cameraapp`) on the **Xperia 1 V**
+(LineageOS), plus a re-sign patch for Photo Pro so both can be installed together.
 
 ## ❓ About
 
-Patches for apps I like.
+The Xperia 1 VI app talks to the same Sony camera HAL family as the 1 V but trips two request-validation
+gates on the 1 V HAL (`objectSelectTriggerArea` must be 4 ints; `sceneDetectMode` must be accompanied by
+`conditionDetectMode`). These patches inject the two shims, and make the sideloaded app see
+`com.sonymobile.cameracommon`. Photo Pro needs no code changes, only the same signer (both apps declare
+`SOMC_CAMERA`).
 
-<!-- TODO: Update this about section with a brief introduction/summary about this repo and what it offers. -->
+Also required on LineageOS pdx234, outside of patching: the `Android/data/<pkg>/files/DCIM` probe dir
+(the ROM cannot create it; see the companion repo's KSU module).
 
 ### How to use these patches
 
-Click here to add these patches to Morphe: https://morphe.software/add-source?github=xyz-user/xyz-patches
+Click here to add these patches to Morphe: https://morphe.software/add-source?github=alalloush/xperia-1v-camera-patches
 
 ## 🩹 Patches list
 
@@ -88,4 +94,4 @@ See the [Morphe documentation](https://github.com/MorpheApp/morphe-documentation
 
 ## 📜 License
 
-UserXYZ Patches are licensed under the [GNU General Public License v3.0](LICENSE)
+These patches are licensed under the [GNU General Public License v3.0](LICENSE)

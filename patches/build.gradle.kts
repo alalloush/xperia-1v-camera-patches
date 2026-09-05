@@ -1,14 +1,13 @@
-group = "app.template"
+group = "app.xperia"
 
 patches {
-    // TODO: Update this section with your project details.
     about {
-        name = "UserXYZ Patches"
-        description = "Patches for apps I like"
-        source = "git@github.com:UserXYZ/morphe-patches.git"
-        author = "Awesome dev"
+        name = "alalloush Xperia 1 V camera patches"
+        description = "Runs the Sony Xperia 1 VI camera app (jp.co.sony.mc.cameraapp) on the Xperia 1 V, and re-signs Photo Pro to install alongside it"
+        source = "git@github.com:alalloush/xperia-1v-camera-patches.git"
+        author = "alalloush"
         contact = "na"
-        website = "na"
+        website = "https://github.com/alalloush/xperia-1v-camera-patches"
         license = "GPLv3"
     }
 }
