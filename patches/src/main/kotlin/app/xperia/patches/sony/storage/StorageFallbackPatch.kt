@@ -44,11 +44,10 @@ val storageFallbackPatch = bytecodePatch(
     extendWith("extensions/sony-camera.mpe")
 
     execute {
-        val storageUtil = classBy { it.type.endsWith("/storage/StorageUtil;") }
-            ?: throw PatchException("StorageUtil class not found")
+        val storageUtil = mutableClassDefBy { classDef -> classDef.type.endsWith("/storage/StorageUtil;") }
 
         var rewritten = 0
-        storageUtil.mutableClass.methods.forEach { method ->
+        storageUtil.methods.forEach { method ->
             val instructions = method.implementation?.instructions?.toList() ?: return@forEach
             instructions.forEachIndexed { index, instruction ->
                 if (instruction.opcode != Opcode.INVOKE_VIRTUAL && instruction.opcode != Opcode.INVOKE_STATIC) return@forEachIndexed
