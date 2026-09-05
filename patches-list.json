@@ -1,6 +1,6 @@
 {
   "NOTE": "Do NOT manually edit this file. This file is automatically updated when semantic release (release.yml) runs. Manually editing this file can break your releases and break third party tools that use this file.",
-  "version": "1.0.0-dev.1",
+  "version": "1.0.0-dev.2",
   "patches": [
     {
       "name": "Camera common visibility",
@@ -29,11 +29,28 @@
       "options": []
     },
     {
-      "name": "Photo Pro signer alignment",
-      "description": "No code changes. Re-signs Photo Pro with the Morphe key so it can be installed next to the patched Xperia 1 VI camera app (both declare SOMC_CAMERA and must share a signer). The Android/data/com.sonymobile.photopro/files/DCIM dir must still be provisioned by root.",
+      "name": "Storage fallback",
+      "description": "Fixes \"Memory unavailable\" on ROMs that cannot create Android/data/<pkg>/files (LineageOS on the Xperia 1 V): the storage probe falls back to the app's internal storage. Photos still go to DCIM through MediaStore.",
       "default": true,
       "dependencies": [],
       "compatiblePackages": [
+        {
+          "packageName": "jp.co.sony.mc.cameraapp",
+          "name": null,
+          "description": null,
+          "apkFileType": null,
+          "appIconColor": null,
+          "signatures": null,
+          "targets": [
+            {
+              "version": null,
+              "versionCodes": null,
+              "isExperimental": false,
+              "minSdk": null,
+              "description": null
+            }
+          ]
+        },
         {
           "packageName": "com.sonymobile.photopro",
           "name": null,
