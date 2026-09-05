@@ -1,5 +1,6 @@
 package app.xperia.patches.sony.camera
 
+import app.xperia.patches.sony.SONY_CAMERA
 import app.morphe.patcher.Fingerprint
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.patch.bytecodePatch
@@ -24,7 +25,7 @@ val xperia1VCameraCompatPatch = bytecodePatch(
             "objectSelectTriggerArea to the 4 ints the 1 V HAL defines and sends conditionDetectMode " +
             "alongside sceneDetectMode, which the 1 V HAL validates together.",
 ) {
-    compatibleWith("jp.co.sony.mc.cameraapp")
+    compatibleWith(SONY_CAMERA)
 
     extendWith("extensions/sony-camera.mpe")
 

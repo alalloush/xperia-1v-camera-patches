@@ -1,5 +1,6 @@
 package app.xperia.patches.sony.camera
 
+import app.xperia.patches.sony.SONY_CAMERA
 import app.morphe.patcher.patch.resourcePatch
 import org.w3c.dom.Element
 
@@ -14,7 +15,7 @@ val cameraCommonVisibilityPatch = resourcePatch(
             "gyro calibration) when both are sideloaded: adds the <queries> entry and declares the " +
             "CAMERA_STATUS_PROVIDER and CAMERA_ADDON permissions.",
 ) {
-    compatibleWith("jp.co.sony.mc.cameraapp")
+    compatibleWith(SONY_CAMERA)
 
     execute {
         document("AndroidManifest.xml").use { document ->

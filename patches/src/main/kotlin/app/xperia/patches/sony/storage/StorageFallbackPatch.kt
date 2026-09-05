@@ -1,5 +1,7 @@
 package app.xperia.patches.sony.storage
 
+import app.xperia.patches.sony.SONY_CAMERA
+import app.xperia.patches.sony.PHOTO_PRO
 import app.morphe.patcher.extensions.InstructionExtensions.replaceInstruction
 import app.morphe.patcher.patch.PatchException
 import app.morphe.patcher.patch.bytecodePatch
@@ -39,7 +41,7 @@ val storageFallbackPatch = bytecodePatch(
             "(LineageOS on the Xperia 1 V): the storage probe falls back to the app's internal storage. " +
             "Photos still go to DCIM through MediaStore.",
 ) {
-    compatibleWith("jp.co.sony.mc.cameraapp", "com.sonymobile.photopro")
+    compatibleWith(SONY_CAMERA, PHOTO_PRO)
 
     extendWith("extensions/sony-camera.mpe")
 
