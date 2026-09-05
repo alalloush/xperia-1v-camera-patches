@@ -13,19 +13,20 @@ import com.android.tools.smali.dexlib2.iface.reference.MethodReference
 private const val EXTENSION_CLASS = "Lapp/xperia/extension/sony/camera/XperiaStorage;"
 
 /** Platform call → wrapper (same argument registers, static). */
-private data class Rewrite(val definingClass: String, val name: String, val replacement: String)
+private data class Rewrite(val definingClass: String, val name: String, val parameters: List<String>, val replacement: String)
 
 private val rewrites = listOf(
     Rewrite(
-        "Landroid/content/Context;", "getExternalFilesDirs",
+        "Landroid/content/Context;", "getExternalFilesDirs", listOf("Ljava/lang/String;"),
         "$EXTENSION_CLASS->externalFilesDirs(Landroid/content/Context;Ljava/lang/String;)[Ljava/io/File;",
     ),
     Rewrite(
-        "Landroid/os/storage/StorageManager;", "getStorageVolume",
+        // Exact parameter match: StorageManager also has getStorageVolume(Uri), which must stay untouched.
+        "Landroid/os/storage/StorageManager;", "getStorageVolume", listOf("Ljava/io/File;"),
         "$EXTENSION_CLASS->storageVolume(Landroid/os/storage/StorageManager;Ljava/io/File;)Landroid/os/storage/StorageVolume;",
     ),
     Rewrite(
-        "Landroid/os/Environment;", "isExternalStorageRemovable",
+        "Landroid/os/Environment;", "isExternalStorageRemovable", listOf("Ljava/io/File;"),
         "$EXTENSION_CLASS->isExternalStorageRemovable(Ljava/io/File;)Z",
     ),
 )
@@ -60,7 +61,8 @@ val storageFallbackPatch = bytecodePatch(
                 if (instruction.opcode != Opcode.INVOKE_VIRTUAL && instruction.opcode != Opcode.INVOKE_STATIC) return@forEachIndexed
                 val reference = (instruction as ReferenceInstruction).reference as? MethodReference ?: return@forEachIndexed
                 val rewrite = rewrites.firstOrNull {
-                    it.definingClass == reference.definingClass && it.name == reference.name
+                    it.definingClass == reference.definingClass && it.name == reference.name &&
+                            it.parameters == reference.parameterTypes.map { type -> type.toString() }
                 } ?: return@forEachIndexed
                 val registers = instruction as FiveRegisterInstruction
                 val args = (0 until registers.registerCount).map { i ->
