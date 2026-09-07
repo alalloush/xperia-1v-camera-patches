@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -113,6 +115,52 @@ public final class RawStreamer {
         }
         s.queue.offer(out);
         return true;
+    }
+
+    private static final int MAX_PENDING = 2;
+    private static Field bufferListField, encoderField, bufferIndexField, copiedField;
+    private static long trimmed, trimLogs;
+
+    /**
+     * Injection point (VideoTrack.doWriteOutputBuffer, before the original body). Sony's Track keeps
+     * encoded frames in mBufferList and drains one per call; once the drain starts late the backlog is
+     * carried forever as constant latency. In raw mode keep at most MAX_PENDING frames queued and release
+     * the rest back to the codec.
+     */
+    public static void trimBacklog(Object track) {
+        if (active == null) return;
+        try {
+            if (bufferListField == null) {
+                Class<?> c = track.getClass();
+                while (c != null && bufferListField == null) {
+                    try {
+                        bufferListField = c.getDeclaredField("mBufferList");
+                        encoderField = c.getDeclaredField("mEncoder");
+                    } catch (NoSuchFieldException e) {
+                        c = c.getSuperclass();
+                    }
+                }
+                bufferListField.setAccessible(true);
+                encoderField.setAccessible(true);
+            }
+            LinkedBlockingDeque<?> list = (LinkedBlockingDeque<?>) bufferListField.get(track);
+            MediaCodec encoder = (MediaCodec) encoderField.get(track);
+            int size = list.size();
+            if ((++trimLogs % 60) == 0) Log.i("RawStreamer", "pending encoded frames=" + size + " trimmed=" + trimmed);
+            while (list.size() > MAX_PENDING) {
+                Object eb = list.removeFirst();
+                if (bufferIndexField == null) {
+                    bufferIndexField = eb.getClass().getField("bufferIndex");
+                    copiedField = eb.getClass().getField("containsCopiedBuffer");
+                }
+                if (!copiedField.getBoolean(eb) && encoder != null) {
+                    encoder.releaseOutputBuffer(bufferIndexField.getInt(eb), false);
+                }
+                trimmed++;
+            }
+        } catch (Exception e) {
+            Log.w("RawStreamer", "trimBacklog failed: " + e);
+        }
     }
 
     /** Injection point (RtmpManager.sendAudio): audio is not carried on this transport. */

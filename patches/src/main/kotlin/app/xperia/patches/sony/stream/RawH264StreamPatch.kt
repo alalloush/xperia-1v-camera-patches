@@ -1,6 +1,7 @@
 package app.xperia.patches.sony.stream
 
 import app.morphe.patcher.Fingerprint
+import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
 import app.morphe.patcher.extensions.InstructionExtensions.getInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -44,6 +45,14 @@ val rawH264StreamPatch = bytecodePatch(
     extendWith("extensions/sony-camera.mpe")
 
     execute {
+        // Drop Sony's encoded-frame backlog while in raw mode (constant ~1.6 s otherwise).
+        Fingerprint(
+            definingClass = "Lcom/sonymobile/android/media/internal/VideoTrack;",
+            name = "doWriteOutputBuffer",
+            parameters = emptyList(),
+            returnType = "V",
+        ).method.addInstructions(0, "invoke-static { p0 }, $EXTENSION_CLASS->trimBacklog(Ljava/lang/Object;)V")
+
         hooks.forEach { hook ->
             val method = Fingerprint(
                 definingClass = MANAGER,
