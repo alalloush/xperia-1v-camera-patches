@@ -1,3 +1,13 @@
+## [1.2.0](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.4...v1.2.0) (2026-09-07)
+
+### 🐛 Bug Fixes
+
+* Build connect-mode constants without growing register counts ([3be446d](https://github.com/alalloush/xperia-1v-camera-patches/commit/3be446dcbd17dc273d7ce1731cf4b18bb2f630d1))
+
+### ✨ New Features
+
+* Add PC via USB / PC via Wi-Fi connect modes for the raw stream; drop latency diagnostics ([a6c821e](https://github.com/alalloush/xperia-1v-camera-patches/commit/a6c821ef199b09bcf10d148de236e0241f60c4a5))
+
 ## [1.1.4](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.3...v1.1.4) (2026-09-07)
 
 ### 🐛 Bug Fixes

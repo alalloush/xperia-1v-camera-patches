@@ -42,9 +42,9 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.1.4](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.1.4)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
+> **[v1.2.0](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.2.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;6 patches total
 <details open>
-<summary>📦 Sony Camera&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
+<summary>📦 Sony Camera&nbsp;&nbsp;•&nbsp;&nbsp;5 patches</summary>
 <br>
 
 **🎯 Supported versions:**
@@ -55,7 +55,8 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Camera common visibility](#camera-common-visibility) | Lets the camera app see and use com.sonymobile.cameracommon (camera status provider, gyro calibration) when both are sideloaded: adds the <queries> entry and declares the CAMERA_STATUS_PROVIDER and CAMERA_ADDON permissions. |  |
-| [Raw H.264 stream](#raw-h-264-stream) | Adds a low-latency transport to Live streaming: use stream key "raw" and the encoded H.264 is sent straight to the host:port of the RTMP URL as a plain TCP stream instead of RTMP (wired: rtmp://127.0.0.1:6970 with adb reverse tcp:6970; wireless: rtmp://<pc-ip>:6970). Receive with gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only. |  |
+| [Raw H.264 stream](#raw-h-264-stream) | Low-latency transport for Live streaming: the encoded H.264 is sent to the PC as a plain TCP stream instead of RTMP (~0.2 s glass-to-glass with Standard stabilization). Receive with gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only. |  |
+| [Raw stream connect modes](#raw-stream-connect-modes) | Adds "PC via USB" and "PC via Wi-Fi" entries to Live streaming's Connect to list for the raw H.264 transport. USB needs no settings (adb reverse tcp:6970 tcp:6970 on the PC); Wi-Fi takes the PC from the RTMP stream URL field (rtmp://pc-ip). |  |
 | [Storage fallback](#storage-fallback) | Fixes "Memory unavailable" on ROMs that cannot create Android/data/<pkg>/files (LineageOS on the Xperia 1 V): the storage probe falls back to the app's internal storage. Photos still go to DCIM through MediaStore. |  |
 | [Xperia 1 V camera HAL compatibility](#xperia-1-v-camera-hal-compatibility) | Makes the Xperia 1 VI camera app work on the Xperia 1 V camera HAL: truncates objectSelectTriggerArea to the 4 ints the 1 V HAL defines and sends conditionDetectMode alongside sceneDetectMode, which the 1 V HAL validates together. |  |
 
