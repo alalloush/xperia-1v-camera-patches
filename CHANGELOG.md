@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.2.0...v1.3.0) (2026-09-07)
+
+### ✨ New Features
+
+* Streaming presets patch (1080p60/120, 4K30/60, bitrate and GOP options); shorter connect-mode labels ([dead495](https://github.com/alalloush/xperia-1v-camera-patches/commit/dead495533f5d49b168e2bf175b4d4b3ba1d8305))
+
 ## [1.2.0](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.4...v1.2.0) (2026-09-07)
 
 ### 🐛 Bug Fixes
