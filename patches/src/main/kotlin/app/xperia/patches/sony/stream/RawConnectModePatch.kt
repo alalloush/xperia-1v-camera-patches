@@ -68,30 +68,35 @@ val rawConnectModePatch = bytecodePatch(
     extendWith("extensions/sony-camera.mpe")
 
     execute {
-        // 1. Two more enum constants (ordinals 3 and 4), built inside $values() like the Kotlin ones.
+        // 1. Two more enum constants (ordinals 3 and 4), built inside $values() with its three locals.
         Fingerprint(definingClass = MODE, name = "\$values", parameters = emptyList(), returnType = MODE_ARRAY).method.apply {
-            implementation!!.registerCount = 9
             val body = instructions.size
             addInstructions(
                 0,
                 """
-                    sget-object v0, $MODE->RTMP_URL:$MODE
-                    sget-object v1, $MODE->YOUTUBE:$MODE
+                    const/4 v0, 0x5
+                    new-array v0, v0, $MODE_ARRAY
+                    const/4 v1, 0x0
+                    sget-object v2, $MODE->RTMP_URL:$MODE
+                    aput-object v2, v0, v1
+                    const/4 v1, 0x1
+                    sget-object v2, $MODE->YOUTUBE:$MODE
+                    aput-object v2, v0, v1
+                    const/4 v1, 0x2
                     sget-object v2, $MODE->FACEBOOK:$MODE
-                    new-instance v3, $MODE
-                    const-string v4, "RAW_USB"
-                    const/4 v5, 0x3
-                    const/4 v6, -0x1
-                    const/4 v7, 0x0
-                    invoke-direct { v3, v4, v5, v6, v7 }, $MODE-><init>(Ljava/lang/String;III)V
-                    new-instance v4, $MODE
-                    const-string v5, "RAW_WIFI"
-                    const/4 v6, 0x4
-                    const/4 v7, -0x1
-                    const/4 v8, 0x0
-                    invoke-direct { v4, v5, v6, v7, v8 }, $MODE-><init>(Ljava/lang/String;III)V
-                    filled-new-array { v0, v1, v2, v3, v4 }, $MODE_ARRAY
-                    move-result-object v0
+                    aput-object v2, v0, v1
+                    const-string v1, "RAW_USB"
+                    const/4 v2, 0x3
+                    invoke-static { v1, v2 }, $EXTENSION_CLASS->create(Ljava/lang/String;I)Ljava/lang/Object;
+                    move-result-object v1
+                    check-cast v1, $MODE
+                    aput-object v1, v0, v2
+                    const-string v1, "RAW_WIFI"
+                    const/4 v2, 0x4
+                    invoke-static { v1, v2 }, $EXTENSION_CLASS->create(Ljava/lang/String;I)Ljava/lang/Object;
+                    move-result-object v1
+                    check-cast v1, $MODE
+                    aput-object v1, v0, v2
                     return-object v0
                 """,
             )
@@ -115,29 +120,36 @@ val rawConnectModePatch = bytecodePatch(
             removeInstructions(instructions.size - body, body)
         }
 
-        // 3. Labels: the enum's getTextId() and the settings-row text lookup.
-        listOf(
-            Fingerprint(definingClass = MODE, name = "getTextId", parameters = emptyList(), returnType = "I"),
-            Fingerprint(
-                definingClass = "Ljp/co/sony/mc/camera/view/setting/settingitem/CameraSettingResource;",
-                name = "getStreamingSettingTextId",
-                parameters = listOf("Ljp/co/sony/mc/camera/configuration/parameters/UserSettingValue;"),
-                returnType = "I",
-            ),
-        ).forEach { fingerprint ->
-            fingerprint.method.apply {
-                if (implementation!!.registerCount < 2) implementation!!.registerCount = 2
-                addInstructionsWithLabels(
-                    0,
-                    """
-                        invoke-static { p0 }, $EXTENSION_CLASS->textId(Ljava/lang/Object;)I
-                        move-result v0
-                        if-eqz v0, :original
-                        return v0
-                    """,
-                    ExternalLabel("original", getInstruction(0)),
-                )
-            }
+        // 3. Labels. StreamingConnectMode.getTextId() has no locals: the extension returns the final id
+        //    (raw label, or mTextId). The settings-row lookup keeps its own table for Sony's entries.
+        Fingerprint(definingClass = MODE, name = "getTextId", parameters = emptyList(), returnType = "I").method.apply {
+            val body = instructions.size
+            addInstructions(
+                0,
+                """
+                    invoke-static { p0 }, $EXTENSION_CLASS->textId(Ljava/lang/Object;)I
+                    move-result p0
+                    return p0
+                """,
+            )
+            removeInstructions(instructions.size - body, body)
+        }
+        Fingerprint(
+            definingClass = "Ljp/co/sony/mc/camera/view/setting/settingitem/CameraSettingResource;",
+            name = "getStreamingSettingTextId",
+            parameters = listOf("Ljp/co/sony/mc/camera/configuration/parameters/UserSettingValue;"),
+            returnType = "I",
+        ).method.apply {
+            addInstructionsWithLabels(
+                0,
+                """
+                    invoke-static { p0 }, $EXTENSION_CLASS->rawTextId(Ljava/lang/Object;)I
+                    move-result v0
+                    if-eqz v0, :original
+                    return v0
+                """,
+                ExternalLabel("original", getInstruction(0)),
+            )
         }
 
         // 4. `mode == RTMP_URL` comparisons: normalise the compared register first.

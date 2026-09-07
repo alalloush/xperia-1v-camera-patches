@@ -3,6 +3,8 @@ package app.xperia.extension.sony.camera;
 import android.content.Context;
 import android.util.Log;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,12 +45,38 @@ public final class RawConnectMode {
         return out.toArray(Arrays.copyOf(values, 0));
     }
 
-    /** Label resource for raw modes; 0 for Sony's own entries (the caller keeps its value). */
+    /** StreamingConnectMode.$values(): one extra constant (the enum constructor is (name, ordinal, icon, text)). */
+    public static Object create(String name, int ordinal) {
+        try {
+            Class<?> type = Class.forName("jp.co.sony.mc.camera.configuration.parameters.StreamingConnectMode");
+            Constructor<?> ctor = type.getDeclaredConstructor(String.class, int.class, int.class, int.class);
+            ctor.setAccessible(true);
+            return ctor.newInstance(name, ordinal, -1, 0);
+        } catch (Exception e) {
+            throw new IllegalStateException("StreamingConnectMode." + name, e);
+        }
+    }
+
+    /** StreamingConnectMode.getTextId(): raw label for the raw entries, otherwise the constant's mTextId. */
     public static int textId(Object mode) {
-        if (!isRaw(mode)) return 0;
+        int raw = rawTextId(mode);
+        if (raw != 0) return raw;
+        try {
+            Field f = mode.getClass().getDeclaredField("mTextId");
+            f.setAccessible(true);
+            return f.getInt(mode);
+        } catch (Exception e) {
+            Log.w(TAG, "textId: " + e);
+            return 0;
+        }
+    }
+
+    /** Label resource for the raw entries; 0 for anything else. */
+    public static int rawTextId(Object value) {
+        if (!isRaw(value)) return 0;
         Context context = appContext();
         if (context == null) return 0;
-        String name = USB.equals(((Enum<?>) mode).name()) ? "xperia_raw_usb_txt" : "xperia_raw_wifi_txt";
+        String name = USB.equals(((Enum<?>) value).name()) ? "xperia_raw_usb_txt" : "xperia_raw_wifi_txt";
         return context.getResources().getIdentifier(name, "string", context.getPackageName());
     }
 
