@@ -2,6 +2,8 @@ package app.xperia.extension.sony.camera;
 
 import android.media.MediaCodec;
 import android.net.Uri;
+import android.os.SystemClock;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,6 +36,7 @@ public final class RawStreamer {
     private volatile boolean running = true;
     private volatile byte[] parameterSets;
     private Object manager;
+    private long frames;
 
     private RawStreamer(String host, int port) {
         this.host = host;
@@ -88,6 +91,10 @@ public final class RawStreamer {
         if (s == null) return false;
         if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) return true; // SPS/PPS via setVideoInfo
         boolean key = (info.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0;
+        if ((++s.frames % 30) == 0) {
+            long ageMs = (SystemClock.elapsedRealtimeNanos() / 1000 - info.presentationTimeUs) / 1000;
+            Log.i("RawStreamer", "frame " + s.frames + " age=" + ageMs + "ms queue=" + s.queue.size() + " key=" + key + " size=" + info.size);
+        }
         byte[] ps = key ? s.parameterSets : null;
         int psLen = ps != null ? ps.length : 0;
         ByteBuffer src = buffer.duplicate();
