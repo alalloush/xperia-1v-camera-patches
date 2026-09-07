@@ -117,6 +117,18 @@ public final class RawStreamer {
         return true;
     }
 
+    private static long rawFrames;
+
+    /** Injection point (VideoTrack$VideoEncoderCallback.onOutputBufferAvailable): raw codec timestamps. */
+    public static void onEncoderOutput(MediaCodec.BufferInfo info) {
+        if (active == null || info == null) return;
+        if ((++rawFrames % 30) != 0) return;
+        long nowUs = SystemClock.elapsedRealtimeNanos() / 1000;
+        long nowUptimeUs = SystemClock.uptimeMillis() * 1000;
+        Log.i("RawStreamer", "encoder out pts=" + info.presentationTimeUs + "us ageElapsed=" + (nowUs - info.presentationTimeUs) / 1000
+                + "ms ageUptime=" + (nowUptimeUs - info.presentationTimeUs) / 1000 + "ms flags=" + info.flags);
+    }
+
     private static final int MAX_PENDING = 2;
     private static Field bufferListField, encoderField, bufferIndexField, copiedField;
     private static long trimmed, trimLogs;

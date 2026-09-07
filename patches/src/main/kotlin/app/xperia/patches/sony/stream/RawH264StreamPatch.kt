@@ -53,6 +53,14 @@ val rawH264StreamPatch = bytecodePatch(
             returnType = "V",
         ).method.addInstructions(0, "invoke-static { p0 }, $EXTENSION_CLASS->trimBacklog(Ljava/lang/Object;)V")
 
+        // Raw MediaCodec output timestamps (before Sony rewrites them) for latency diagnosis.
+        Fingerprint(
+            definingClass = "Lcom/sonymobile/android/media/internal/VideoTrack\$VideoEncoderCallback;",
+            name = "onOutputBufferAvailable",
+            parameters = listOf("Landroid/media/MediaCodec;", "I", BUFFER_INFO),
+            returnType = "V",
+        ).method.addInstructions(0, "invoke-static { p3 }, $EXTENSION_CLASS->onEncoderOutput($BUFFER_INFO)V")
+
         hooks.forEach { hook ->
             val method = Fingerprint(
                 definingClass = MANAGER,
