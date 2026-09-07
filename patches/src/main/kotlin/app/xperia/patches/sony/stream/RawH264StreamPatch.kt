@@ -1,7 +1,6 @@
 package app.xperia.patches.sony.stream
 
 import app.morphe.patcher.Fingerprint
-import app.morphe.patcher.extensions.InstructionExtensions.addInstructions
 import app.morphe.patcher.extensions.InstructionExtensions.addInstructionsWithLabels
 import app.morphe.patcher.extensions.InstructionExtensions.getInstruction
 import app.morphe.patcher.patch.bytecodePatch
@@ -30,37 +29,21 @@ private val hooks = listOf(
 /**
  * Sony's live streaming drives com.pedro RtmpClient through RtmpManager (connect / setVideoInfo /
  * sendVideo / sendAudio / disconnect). Each entry point first asks RawStreamer whether it owns the
- * session (stream key "raw"); if so the original RTMP code is skipped.
+ * session (connect mode PC via USB / PC via Wi-Fi, see RawConnectModePatch); if so the original RTMP
+ * code is skipped.
  */
 @Suppress("unused")
 val rawH264StreamPatch = bytecodePatch(
     name = "Raw H.264 stream",
-    description = "Adds a low-latency transport to Live streaming: use stream key \"raw\" and the encoded " +
-            "H.264 is sent straight to the host:port of the RTMP URL as a plain TCP stream instead of RTMP " +
-            "(wired: rtmp://127.0.0.1:6970 with adb reverse tcp:6970; wireless: rtmp://<pc-ip>:6970). " +
-            "Receive with gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only.",
+    description = "Low-latency transport for Live streaming: the encoded H.264 is sent to the PC as a plain " +
+            "TCP stream instead of RTMP (~0.2 s glass-to-glass with Standard stabilization). Receive with " +
+            "gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only.",
 ) {
     compatibleWith(SONY_CAMERA)
 
     extendWith("extensions/sony-camera.mpe")
 
     execute {
-        // Drop Sony's encoded-frame backlog while in raw mode (constant ~1.6 s otherwise).
-        Fingerprint(
-            definingClass = "Lcom/sonymobile/android/media/internal/VideoTrack;",
-            name = "doWriteOutputBuffer",
-            parameters = emptyList(),
-            returnType = "V",
-        ).method.addInstructions(0, "invoke-static { p0 }, $EXTENSION_CLASS->trimBacklog(Ljava/lang/Object;)V")
-
-        // Raw MediaCodec output timestamps (before Sony rewrites them) for latency diagnosis.
-        Fingerprint(
-            definingClass = "Lcom/sonymobile/android/media/internal/VideoTrack\$VideoEncoderCallback;",
-            name = "onOutputBufferAvailable",
-            parameters = listOf("Landroid/media/MediaCodec;", "I", BUFFER_INFO),
-            returnType = "V",
-        ).method.addInstructions(0, "invoke-static { p3 }, $EXTENSION_CLASS->onEncoderOutput($BUFFER_INFO)V")
-
         hooks.forEach { hook ->
             val method = Fingerprint(
                 definingClass = MANAGER,

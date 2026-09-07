@@ -2,26 +2,22 @@ package app.xperia.extension.sony.camera;
 
 import android.media.MediaCodec;
 import android.net.Uri;
-import android.os.SystemClock;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
  * Raw H.264 (Annex-B) over TCP, as a low-latency alternative to Sony's RTMP live streaming.
- * Selected from Sony's own "Connect to: RTMP URL" dialog: URL rtmp://host:port (Sony insists on the
- * rtmp:// scheme) with stream key "raw". Wired: rtmp://127.0.0.1:6970 + `adb reverse tcp:6970 tcp:6970`;
- * wireless: rtmp://<pc-ip>:6970. The PC runs e.g.
+ * Selected from Sony's "Connect to" list ({@link RawConnectMode}): "PC via USB" streams to 127.0.0.1:6970
+ * (`adb reverse tcp:6970 tcp:6970` on the PC), "PC via Wi-Fi" to the host of the RTMP stream URL field
+ * (rtmp://pc-ip[:port], port defaults to 6970). The PC runs e.g.
  *   gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! videoconvert ! pipewiresink ...
- * Hooked into jp.co.sony.mc.camera.rtmp.RtmpManager: connect/sendVideo/setVideoInfo/sendAudio/disconnect.
+ * Hooked into jp.co.sony.mc.camera.rtmp.RtmpManager: connect/setVideoInfo/sendVideo/sendAudio/disconnect.
  * MediaCodec's H.264 output is Annex-B (start codes); pedro's FLV packer strips them, we forward as-is and
  * repeat SPS/PPS before every keyframe so a receiver can join at any time.
  */
@@ -38,7 +34,6 @@ public final class RawStreamer {
     private volatile boolean running = true;
     private volatile byte[] parameterSets;
     private Object manager;
-    private long frames;
 
     private RawStreamer(String host, int port) {
         this.host = host;
@@ -47,25 +42,27 @@ public final class RawStreamer {
         writer.setDaemon(true);
     }
 
-    /**
-     * Sony validates the URL field (must start with rtmp://), so this transport is selected by the stream
-     * key: key "raw" (or a URL path ending in /raw). Host and port come from the URL; port defaults to 6970.
-     */
-    public static boolean claims(String url, String key) {
-        if (url == null) return false;
-        String k = key == null ? "" : key.trim();
-        return k.equalsIgnoreCase("raw") || url.endsWith("/raw");
-    }
+    public static final int DEFAULT_PORT = 6970;
 
     /**
-     * Injection point (RtmpManager.connect). Returns true when the URL is ours and Sony's RTMP client must
-     * not be started.
+     * Injection point (RtmpManager.connect). Returns true when the connect mode is one of ours and Sony's
+     * RTMP client must not be started.
      */
     public static boolean connect(Object manager, String url, String key) {
-        if (!claims(url, key)) return false;
-        Uri uri = Uri.parse(url);
-        int port = uri.getPort() > 0 ? uri.getPort() : 6970;
-        RawStreamer s = new RawStreamer(uri.getHost(), port);
+        String mode = RawConnectMode.current();
+        String host;
+        int port = DEFAULT_PORT;
+        if (RawConnectMode.USB.equals(mode)) {
+            host = "127.0.0.1";
+        } else if (RawConnectMode.WIFI.equals(mode)) {
+            Uri uri = Uri.parse(url == null ? "" : url.trim());
+            host = uri.getHost();
+            if (host == null) return false;
+            if (uri.getPort() > 0) port = uri.getPort();
+        } else {
+            return false;
+        }
+        RawStreamer s = new RawStreamer(host, port);
         s.manager = manager;
         RawStreamer old = active;
         active = s;
@@ -93,10 +90,6 @@ public final class RawStreamer {
         if (s == null) return false;
         if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) return true; // SPS/PPS via setVideoInfo
         boolean key = (info.flags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0;
-        if ((++s.frames % 30) == 0) {
-            long ageMs = (SystemClock.elapsedRealtimeNanos() / 1000 - info.presentationTimeUs) / 1000;
-            Log.i("RawStreamer", "frame " + s.frames + " age=" + ageMs + "ms queue=" + s.queue.size() + " key=" + key + " size=" + info.size);
-        }
         byte[] ps = key ? s.parameterSets : null;
         int psLen = ps != null ? ps.length : 0;
         ByteBuffer src = buffer.duplicate();
@@ -115,64 +108,6 @@ public final class RawStreamer {
         }
         s.queue.offer(out);
         return true;
-    }
-
-    private static long rawFrames;
-
-    /** Injection point (VideoTrack$VideoEncoderCallback.onOutputBufferAvailable): raw codec timestamps. */
-    public static void onEncoderOutput(MediaCodec.BufferInfo info) {
-        if (active == null || info == null) return;
-        if ((++rawFrames % 30) != 0) return;
-        long nowUs = SystemClock.elapsedRealtimeNanos() / 1000;
-        long nowUptimeUs = SystemClock.uptimeMillis() * 1000;
-        Log.i("RawStreamer", "encoder out pts=" + info.presentationTimeUs + "us ageElapsed=" + (nowUs - info.presentationTimeUs) / 1000
-                + "ms ageUptime=" + (nowUptimeUs - info.presentationTimeUs) / 1000 + "ms flags=" + info.flags);
-    }
-
-    private static final int MAX_PENDING = 2;
-    private static Field bufferListField, encoderField, bufferIndexField, copiedField;
-    private static long trimmed, trimLogs;
-
-    /**
-     * Injection point (VideoTrack.doWriteOutputBuffer, before the original body). Sony's Track keeps
-     * encoded frames in mBufferList and drains one per call; once the drain starts late the backlog is
-     * carried forever as constant latency. In raw mode keep at most MAX_PENDING frames queued and release
-     * the rest back to the codec.
-     */
-    public static void trimBacklog(Object track) {
-        if (active == null) return;
-        try {
-            if (bufferListField == null) {
-                Class<?> c = track.getClass();
-                while (c != null && bufferListField == null) {
-                    try {
-                        bufferListField = c.getDeclaredField("mBufferList");
-                        encoderField = c.getDeclaredField("mEncoder");
-                    } catch (NoSuchFieldException e) {
-                        c = c.getSuperclass();
-                    }
-                }
-                bufferListField.setAccessible(true);
-                encoderField.setAccessible(true);
-            }
-            LinkedBlockingDeque<?> list = (LinkedBlockingDeque<?>) bufferListField.get(track);
-            MediaCodec encoder = (MediaCodec) encoderField.get(track);
-            int size = list.size();
-            if ((++trimLogs % 60) == 0) Log.i("RawStreamer", "pending encoded frames=" + size + " trimmed=" + trimmed);
-            while (list.size() > MAX_PENDING) {
-                Object eb = list.removeFirst();
-                if (bufferIndexField == null) {
-                    bufferIndexField = eb.getClass().getField("bufferIndex");
-                    copiedField = eb.getClass().getField("containsCopiedBuffer");
-                }
-                if (!copiedField.getBoolean(eb) && encoder != null) {
-                    encoder.releaseOutputBuffer(bufferIndexField.getInt(eb), false);
-                }
-                trimmed++;
-            }
-        } catch (Exception e) {
-            Log.w("RawStreamer", "trimBacklog failed: " + e);
-        }
     }
 
     /** Injection point (RtmpManager.sendAudio): audio is not carried on this transport. */
