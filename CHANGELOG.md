@@ -1,3 +1,9 @@
+## [1.1.3](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.2...v1.1.3) (2026-09-07)
+
+### 🐛 Bug Fixes
+
+* Trim Sony's encoded-frame backlog in raw mode (constant 1.6 s latency) ([5d37940](https://github.com/alalloush/xperia-1v-camera-patches/commit/5d37940e2fce8c7a9be3162d1c6e25f6f0ccdd20))
+
 ## [1.1.2](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.1...v1.1.2) (2026-09-07)
 
 ### 🐛 Bug Fixes
