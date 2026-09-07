@@ -23,8 +23,8 @@ private const val MODE_ARRAY = "[$MODE"
 private const val DIALOG_ID = "Ljp/co/sony/mc/camera/view/messagedialog/DialogId;"
 
 private val rawStrings = mapOf(
-    "xperia_raw_usb_txt" to "PC via USB (raw H.264)",
-    "xperia_raw_wifi_txt" to "PC via Wi\u2011Fi (raw H.264)",
+    "xperia_raw_usb_txt" to "PC (USB)",
+    "xperia_raw_wifi_txt" to "PC (Wi\u2011Fi)",
 )
 
 /** Labels for the two connect-mode entries; looked up by name at runtime. */
