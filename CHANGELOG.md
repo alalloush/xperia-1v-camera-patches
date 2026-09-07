@@ -1,3 +1,9 @@
+## [1.1.4](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.3...v1.1.4) (2026-09-07)
+
+### 🐛 Bug Fixes
+
+* Log raw encoder output timestamps for latency diagnosis ([746c673](https://github.com/alalloush/xperia-1v-camera-patches/commit/746c673164ab5220cf462d9587648716a3d7edfc))
+
 ## [1.1.3](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.2...v1.1.3) (2026-09-07)
 
 ### 🐛 Bug Fixes
