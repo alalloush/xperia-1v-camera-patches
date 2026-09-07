@@ -13,9 +13,9 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * Raw H.264 (Annex-B) over TCP, as a low-latency alternative to Sony's RTMP live streaming.
- * Selected from Sony's own "Connect to: RTMP URL" dialog by entering tcp://host:port as the URL
- * (the stream key is ignored). Wired: tcp://127.0.0.1:6970 + `adb reverse tcp:6970 tcp:6970`;
- * wireless: tcp://<pc-ip>:6970. The PC runs e.g.
+ * Selected from Sony's own "Connect to: RTMP URL" dialog: URL rtmp://host:port (Sony insists on the
+ * rtmp:// scheme) with stream key "raw". Wired: rtmp://127.0.0.1:6970 + `adb reverse tcp:6970 tcp:6970`;
+ * wireless: rtmp://<pc-ip>:6970. The PC runs e.g.
  *   gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! videoconvert ! pipewiresink ...
  * Hooked into jp.co.sony.mc.camera.rtmp.RtmpManager: connect/sendVideo/setVideoInfo/sendAudio/disconnect.
  * MediaCodec's H.264 output is Annex-B (start codes); pedro's FLV packer strips them, we forward as-is and
@@ -42,9 +42,14 @@ public final class RawStreamer {
         writer.setDaemon(true);
     }
 
-    /** True for URLs this transport owns. */
-    public static boolean claims(String url) {
-        return url != null && url.startsWith("tcp://");
+    /**
+     * Sony validates the URL field (must start with rtmp://), so this transport is selected by the stream
+     * key: key "raw" (or a URL path ending in /raw). Host and port come from the URL; port defaults to 6970.
+     */
+    public static boolean claims(String url, String key) {
+        if (url == null) return false;
+        String k = key == null ? "" : key.trim();
+        return k.equalsIgnoreCase("raw") || url.endsWith("/raw");
     }
 
     /**
@@ -52,7 +57,7 @@ public final class RawStreamer {
      * not be started.
      */
     public static boolean connect(Object manager, String url, String key) {
-        if (!claims(url)) return false;
+        if (!claims(url, key)) return false;
         Uri uri = Uri.parse(url);
         int port = uri.getPort() > 0 ? uri.getPort() : 6970;
         RawStreamer s = new RawStreamer(uri.getHost(), port);

@@ -29,14 +29,14 @@ private val hooks = listOf(
 /**
  * Sony's live streaming drives com.pedro RtmpClient through RtmpManager (connect / setVideoInfo /
  * sendVideo / sendAudio / disconnect). Each entry point first asks RawStreamer whether it owns the
- * session (URL scheme tcp://); if so the original RTMP code is skipped.
+ * session (stream key "raw"); if so the original RTMP code is skipped.
  */
 @Suppress("unused")
 val rawH264StreamPatch = bytecodePatch(
     name = "Raw H.264 stream",
-    description = "Adds a low-latency transport to Live streaming: enter tcp://<host>:<port> as the RTMP URL " +
-            "(any stream key) and the encoded H.264 is sent straight to that TCP socket instead of RTMP " +
-            "(wired: tcp://127.0.0.1:6970 with adb reverse; wireless: your PC's LAN IP). " +
+    description = "Adds a low-latency transport to Live streaming: use stream key \"raw\" and the encoded " +
+            "H.264 is sent straight to the host:port of the RTMP URL as a plain TCP stream instead of RTMP " +
+            "(wired: rtmp://127.0.0.1:6970 with adb reverse tcp:6970; wireless: rtmp://<pc-ip>:6970). " +
             "Receive with gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only.",
 ) {
     compatibleWith(SONY_CAMERA)
