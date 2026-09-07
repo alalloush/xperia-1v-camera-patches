@@ -1,3 +1,9 @@
+## [1.1.2](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.1...v1.1.2) (2026-09-07)
+
+### 🐛 Bug Fixes
+
+* Release frame-age logging build for latency diagnosis ([c94cbb0](https://github.com/alalloush/xperia-1v-camera-patches/commit/c94cbb0b258ad0f345b63975b3804549cf0554f1))
+
 ## [1.1.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.0...v1.1.1) (2026-09-07)
 
 ### 🐛 Bug Fixes

@@ -1,7 +1,7 @@
 {
-  "created_at": "2026-09-07T20:28:24",
-  "description": "## [1.1.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.0...v1.1.1) (2026-09-07)\n\n### 🐛 Bug Fixes\n\n* Select the raw H.264 transport by stream key \"raw\" (Sony validates the URL scheme) ([b99f1eb](https://github.com/alalloush/xperia-1v-camera-patches/commit/b99f1eb9cd7634dfdca3b4f865739e773e22a3a9))",
-  "download_url": "https://github.com/alalloush/xperia-1v-camera-patches/releases/download/v1.1.1/patches-1.1.1.mpp",
+  "created_at": "2026-09-07T20:39:59",
+  "description": "## [1.1.2](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.1...v1.1.2) (2026-09-07)\n\n### 🐛 Bug Fixes\n\n* Release frame-age logging build for latency diagnosis ([c94cbb0](https://github.com/alalloush/xperia-1v-camera-patches/commit/c94cbb0b258ad0f345b63975b3804549cf0554f1))",
+  "download_url": "https://github.com/alalloush/xperia-1v-camera-patches/releases/download/v1.1.2/patches-1.1.2.mpp",
   "signature_download_url": "",
-  "version": "1.1.1"
+  "version": "1.1.2"
 }

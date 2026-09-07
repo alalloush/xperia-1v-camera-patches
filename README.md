@@ -42,7 +42,7 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.1.1](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.1.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
+> **[v1.1.2](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.1.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
 <details open>
 <summary>📦 Sony Camera&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
