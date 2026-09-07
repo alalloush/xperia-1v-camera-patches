@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.1.0...v1.1.1) (2026-09-07)
+
+### 🐛 Bug Fixes
+
+* Select the raw H.264 transport by stream key "raw" (Sony validates the URL scheme) ([b99f1eb](https://github.com/alalloush/xperia-1v-camera-patches/commit/b99f1eb9cd7634dfdca3b4f865739e773e22a3a9))
+
 ## [1.1.0](https://github.com/alalloush/xperia-1v-camera-patches/compare/v1.0.0...v1.1.0) (2026-09-07)
 
 ### ✨ New Features

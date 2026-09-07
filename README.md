@@ -42,7 +42,7 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.1.0](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.1.0)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
+> **[v1.1.1](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.1.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;5 patches total
 <details open>
 <summary>📦 Sony Camera&nbsp;&nbsp;•&nbsp;&nbsp;4 patches</summary>
 <br>
@@ -55,7 +55,7 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
 | [Camera common visibility](#camera-common-visibility) | Lets the camera app see and use com.sonymobile.cameracommon (camera status provider, gyro calibration) when both are sideloaded: adds the <queries> entry and declares the CAMERA_STATUS_PROVIDER and CAMERA_ADDON permissions. |  |
-| [Raw H.264 stream](#raw-h-264-stream) | Adds a low-latency transport to Live streaming: enter tcp://<host>:<port> as the RTMP URL (any stream key) and the encoded H.264 is sent straight to that TCP socket instead of RTMP (wired: tcp://127.0.0.1:6970 with adb reverse; wireless: your PC's LAN IP). Receive with gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only. |  |
+| [Raw H.264 stream](#raw-h-264-stream) | Adds a low-latency transport to Live streaming: use stream key "raw" and the encoded H.264 is sent straight to the host:port of the RTMP URL as a plain TCP stream instead of RTMP (wired: rtmp://127.0.0.1:6970 with adb reverse tcp:6970; wireless: rtmp://<pc-ip>:6970). Receive with gst-launch-1.0 tcpserversrc port=6970 ! h264parse ! avdec_h264 ! ... Video only. |  |
 | [Storage fallback](#storage-fallback) | Fixes "Memory unavailable" on ROMs that cannot create Android/data/<pkg>/files (LineageOS on the Xperia 1 V): the storage probe falls back to the app's internal storage. Photos still go to DCIM through MediaStore. |  |
 | [Xperia 1 V camera HAL compatibility](#xperia-1-v-camera-hal-compatibility) | Makes the Xperia 1 VI camera app work on the Xperia 1 V camera HAL: truncates objectSelectTriggerArea to the 4 ints the 1 V HAL defines and sends conditionDetectMode alongside sceneDetectMode, which the 1 V HAL validates together. |  |
 
