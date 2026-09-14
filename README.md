@@ -80,6 +80,19 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 
 <!-- PATCHES_END -->
 
+### 🧪 Work in progress: low-latency PC streaming
+
+Off by default, prefixed `[WIP]` in Morphe; the working camera needs none of them.
+
+- **Raw H.264 stream** + **Raw stream connect modes** — adds "PC (USB)" / "PC (Wi‑Fi)" to Live streaming's
+  *Connect to* list; the encoder output goes to the PC as a plain TCP stream, no RTMP. Measured **~0.2 s
+  glass-to-glass** wired and over Wi‑Fi (1080p30, stabilization *Standard* or *Off*). Stabilization *High
+  quality* buffers ~1.5 s inside the HAL (lookahead EIS) — keep it off when streaming. Receiver: a GStreamer
+  pipeline (`tcpserversrc port=6970 ! h264parse ! nvh264dec/avdec_h264 ! pipewiresink`) publishes the phone as
+  a PipeWire camera for any app. Video only. Working as of v1.2.0.
+- **Streaming presets** — meant to unlock 1080p60/120 and 4K30/60 in Live streaming with bitrate / keyframe
+  options. **Crashes the app on launch (v1.3.0); do not select it.**
+
 ## 🛠️ Building locally
 
 Morphe's Gradle plugin is published on GitHub Packages, which needs a token even for public packages: put
