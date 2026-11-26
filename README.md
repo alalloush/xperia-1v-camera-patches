@@ -56,7 +56,7 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 ## 🩹 Patches list
 
 <!-- PATCHES_START EXPANDED -->
-> **[v1.3.1](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.3.1)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;7 patches total
+> **[v1.3.2](https://github.com/alalloush/xperia-1v-camera-patches/releases/tag/v1.3.2)**&nbsp;&nbsp;•&nbsp;&nbsp;`main`&nbsp;&nbsp;•&nbsp;&nbsp;7 patches total
 <details open>
 <summary>📦 Sony Camera&nbsp;&nbsp;•&nbsp;&nbsp;6 patches</summary>
 <br>
@@ -65,6 +65,7 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 
 | 1.0.2.A.0.8 | 🧪&nbsp;1.0.2.A.0.6 |
 | :---: | :---: |
+| Tested on Xperia 1 V (XQ-DQ54), LineageOS 23.2 / Android 16. Newest on APKMirror (March 2026). https://www.apkmirror.com/apk/sony-mobile-communications/sony-camera-3/sony-camera-1-0-2-a-0-8-release/ | Same 1.0.2 line, untested. https://www.apkmirror.com/apk/sony-mobile-communications/sony-camera-3/sony-camera-1-0-2-a-0-6-release/ | Any other version: untested; the patched methods are unobfuscated so newer builds should match. |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
@@ -85,6 +86,7 @@ HAL prints it in logcat as `camera-hal … validateCaptureSettings: Fail …`.
 
 | 1.7.2.A.0.9 |
 | :---: |
+| Tested on Xperia 1 V (XQ-DQ54), LineageOS 23.2 / Android 16. Final Photo Pro release (June 2025). https://www.apkmirror.com/apk/sony-mobile-communications/sony-photography-pro/sony-photography-pro-1-7-2-a-0-9-release/ | Older versions: the storage fix was verified down to 1.6.A.0.27 with the smali build. |
 
 | 💊&nbsp;Patch | 📜&nbsp;Description | ⚙️&nbsp;Options |
 |----------|----------------|-----------|
